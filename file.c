@@ -4,7 +4,6 @@
 #include <stdlib.h>
 
 #define MAX_SIZE 30
-#define EXIT_SUCCES 1
 int get_title (char [MAX_SIZE][MAX_SIZE], FILE *);
 void print_array (char [MAX_SIZE][MAX_SIZE], const int );
 
@@ -53,7 +52,7 @@ int get_title (char title[MAX_SIZE][MAX_SIZE], FILE *file) {
       }
    } else {
          printf("END OF FILE REACHED");
-         exit(EXIT_SUCCES);
+         exit(EXIT_SUCCESS);
    }
    return size;
 }
