@@ -11,11 +11,11 @@
 int get_title (char [MAX_SIZE][MAX_SIZE], FILE *);
 void print_array (char [MAX_SIZE][MAX_SIZE], const int );
 int has_fw_reference(char[MAX_SIZE][MAX_SIZE], const int);
-
+int has_citation(char [MAX_SIZE][MAX_SIZE], const int );
 
 
 int main (void) {
-   int has_fw = 0;
+   int has_fw = 0, has_cite = 0;
    char title[MAX_SIZE][MAX_SIZE];
    int size = 0;
    FILE * file = NULL; 
@@ -31,6 +31,7 @@ int main (void) {
    size = get_title(title, file);
    print_array(title,size);
    has_fw = has_fw_reference(title, size);
+   has_cite = has_citation(title,size);
    printf("%d\n", has_fw);
    }
    
@@ -71,7 +72,7 @@ int get_title (char title[MAX_SIZE][MAX_SIZE], FILE *file) {
 int has_fw_reference(char title[MAX_SIZE][MAX_SIZE], const int size){
    int i = 0, fw_flag = 0, j = 0;
    char fw_ref_words[AMOUNT_OF_PRONOUNS][AMOUNT_OF_PRONOUNS] ={"her","Her","Saadan", "saadan","Saa", "saa",
-   "Derfor", "derfor","Denne","denne","Diise","disse"};
+   "Derfor", "derfor","Denne","denne","Disse","disse","dette","Dette"};
 
     /* First loop: checks the first characters of each letter
       if true, checks the whole word 
@@ -81,25 +82,36 @@ int has_fw_reference(char title[MAX_SIZE][MAX_SIZE], const int size){
       for(j = 0; j < AMOUNT_OF_PRONOUNS; j++) {
          if(strcmp(title[i],fw_ref_words[j]) == 0){
             fw_flag = 1;
-            
-         }  
+         }  else if (title[i][0] == '"' || title[i][0] == '\'') {
+               if(strcmp(title[i]+1,fw_ref_words[j]) == 0){
+                  fw_flag = 1;
+               }
+         }
       }
    }
-    
 
     return fw_flag;
+}
+int has_citation(char title[MAX_SIZE][MAX_SIZE], const int size){
+   int c_flag = FALSE;
+    int i = 0;
+    for(i = 0; i < size; i++){
+        if(title[i][0] == '"'|| title[i][0] == '\''){
+            c_flag = TRUE;
+        }
+    }
+
+    return c_flag;
 }
 
 
 
-
-
 /* debug function */
-void print_array (char array[MAX_SIZE][MAX_SIZE], const int size) {
+void print_array (char title[MAX_SIZE][MAX_SIZE], const int size) {
    int i = 0;
    for(i = 0; i < size;i++) {
       
-      printf("%s ",array[i]);
+      printf("%s ",title[i]);
       
    }
    printf("\n");
