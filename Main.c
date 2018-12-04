@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #define MAX_SIZE 30
 #define TRUE 1
@@ -12,10 +13,10 @@ int get_title (char [MAX_SIZE][MAX_SIZE], FILE *);
 void print_array (char [MAX_SIZE][MAX_SIZE], const int );
 int has_fw_reference(char[MAX_SIZE][MAX_SIZE], const int);
 int has_citation(char [MAX_SIZE][MAX_SIZE], const int );
-
+int has_all_caps(char [MAX_SIZE][MAX_SIZE], const int size);
 
 int main (void) {
-   int has_fw = 0, has_cite = 0;
+   int has_fw = 0, has_cite = 0, has_caps = 0;
    char title[MAX_SIZE][MAX_SIZE];
    int size = 0;
    FILE * file = NULL; 
@@ -32,7 +33,8 @@ int main (void) {
    print_array(title,size);
    has_fw = has_fw_reference(title, size);
    has_cite = has_citation(title,size);
-   printf("%d\n", has_fw);
+   has_caps =has_all_caps(title,size);
+   
    }
    
    return 0;
@@ -93,15 +95,26 @@ int has_fw_reference(char title[MAX_SIZE][MAX_SIZE], const int size){
     return fw_flag;
 }
 int has_citation(char title[MAX_SIZE][MAX_SIZE], const int size){
-   int c_flag = FALSE;
+   int cite_flag = FALSE;
     int i = 0;
     for(i = 0; i < size; i++){
         if(title[i][0] == '"'|| title[i][0] == '\''){
-            c_flag = TRUE;
+            cite_flag = TRUE;
         }
     }
 
-    return c_flag;
+    return cite_flag;
+}
+
+int has_all_caps(char title[MAX_SIZE][MAX_SIZE], const int size){
+   int i = 0, caps_flag = FALSE;
+   
+    for( i = 0; i < size; i++){
+        if(isupper(title[i][0]) && isupper(title[i][1])){
+            caps_flag = TRUE;
+        }
+    }
+    return caps_flag;
 }
 
 
