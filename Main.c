@@ -45,22 +45,26 @@ int main (void) {
     }
    
    
-    while(1) {
+    do {
         size = get_title(title, input_file);
-        print_array(title,size);
-        has_fw   = has_fw_reference(title, size);
-        has_cite = has_citation(title,size);
-        has_caps = has_all_caps(title,size);
-        has_sp_sym = has_special_sym(title, size);
-        score = get_score(has_fw, has_sp_sym, has_cite, has_caps);
-        printf("Og resultatet er %lf\n", score);
-        if(score > THRESHOLD) {
-            write_to_txt(cb_file, title, size, score);
-        } else {
-            write_to_txt(non_cb_file, title, size, score);
-        }
+        if(size > 0) {
+            print_array(title,size);
+            has_fw   = has_fw_reference(title, size);
+            has_cite = has_citation(title,size);
+            has_caps = has_all_caps(title,size);
+            has_sp_sym = has_special_sym(title, size);
+            score = get_score(has_fw, has_sp_sym, has_cite, has_caps);
+            printf("Og resultatet er %lf\n", score);
+            if(score > THRESHOLD) {
+                write_to_txt(cb_file, title, size, score);
+            } else {
+                write_to_txt(non_cb_file, title, size, score);
+            }
 
-        }   
+        } 
+    }
+    while(size > 0);
+    printf("its works");
     fclose(input_file);
     fclose(cb_file);
 	fclose(non_cb_file);
@@ -91,7 +95,7 @@ int get_title (char title[MAX_SIZE][MAX_SIZE], FILE *file) {
         }
     } else {
         printf("END OF FILE REACHED");
-        exit(EXIT_SUCCESS);
+        return 0;
    }
    return size;
 }
