@@ -27,8 +27,8 @@ void txt_write_to (FILE* cb, FILE* non_cb, char title[][MAX_SIZE], const int siz
 	int i;
 	
 	for (i = 0; i < size; i++) {
-		if (points > THRESHOLD) {
-			fprintf(cb, "%s ", title[i]);
+        if (points > THRESHOLD) {
+            fprintf(cb, "%s ", title[i]);
 		} else {
 			fprintf(non_cb, "%s ", title[i]);
 		}

@@ -15,6 +15,7 @@
 #define PROB_NOTCB_QUOTE 0
 #define PROB_CB_FORWARD 0.15
 #define PROB_NOTCB_FORWARD 0
+#define THRESHOLD 50
 
 
 /*prototypes*/
@@ -25,32 +26,44 @@ int has_citation(char [MAX_SIZE][MAX_SIZE], const int );
 int has_all_caps(char [MAX_SIZE][MAX_SIZE], const int );
 int has_special_sym (char[MAX_SIZE][MAX_SIZE], const int);
 double get_score(const int, const int, const int, const int);
+void write_to_txt (FILE *, char [MAX_SIZE][MAX_SIZE], const int , const double);
 
 int main (void) {
     int has_fw = 0, has_cite = 0, has_caps = 0, has_sp_sym = 0;
     char title[MAX_SIZE][MAX_SIZE];
     int size = 0;
-    FILE * file = NULL; 
+    FILE * input_file = NULL, *cb_file = NULL, *non_cb_file = NULL;
+   
     double score = 0;
    
-    file = fopen("overskrifter.txt","r");
-    if (file == NULL) {
+    input_file = fopen("overskrifter.txt","r");
+    cb_file = fopen("clickbait.txt", "w");
+	non_cb_file = fopen("non_clickbait.txt", "w");
+    if (input_file == NULL) {
         printf("ERROR FILE DOES NOT EXIST");
         exit(EXIT_FAILURE);
     }
    
    
     while(1) {
-    size = get_title(title, file);
-    print_array(title,size);
-    has_fw   = has_fw_reference(title, size);
-    has_cite = has_citation(title,size);
-    has_caps = has_all_caps(title,size);
-    has_sp_sym = has_special_sym(title, size);
-    score = get_score(has_fw, has_sp_sym, has_cite, has_caps);
-    printf("Og resultatet er %lf\n", score);
-    }
-   
+        size = get_title(title, input_file);
+        print_array(title,size);
+        has_fw   = has_fw_reference(title, size);
+        has_cite = has_citation(title,size);
+        has_caps = has_all_caps(title,size);
+        has_sp_sym = has_special_sym(title, size);
+        score = get_score(has_fw, has_sp_sym, has_cite, has_caps);
+        printf("Og resultatet er %lf\n", score);
+        if(score > THRESHOLD) {
+            write_to_txt(cb_file, title, size, score);
+        } else {
+            write_to_txt(non_cb_file, title, size, score);
+        }
+
+        }   
+    fclose(input_file);
+    fclose(cb_file);
+	fclose(non_cb_file);
     return 0;
 }
 
@@ -175,13 +188,23 @@ double get_score(const int fw_flag, const int sym_flag, const int quote_flag, co
     is_cb = cb_stedord * cb_eq_marks * cb_quotes * cb_caps;
     isnot_cb = notcb_stedord * notcb_eq_marks * notcb_quotes * notcb_caps;
     
-    bayes_score = is_cb/(is_cb+isnot_cb);
+    bayes_score = is_cb/(is_cb+isnot_cb)*100;
     
     
     printf("is_cb = %lf\nisnot_cb = %lf\n", is_cb, isnot_cb);
     return bayes_score;
 }
 
+
+
+void write_to_txt (FILE *file, char title[MAX_SIZE][MAX_SIZE], const int size, const double score) {
+	int i = 0;
+	
+	for (i = 0; i < size; i++) {
+        fprintf(file, "%s ", title[i]);
+	}
+    fprintf(file,"\" Score %.0lf\"\n",score);
+}
 
 /* debug function */
 void print_array (char title[MAX_SIZE][MAX_SIZE], const int size) {
