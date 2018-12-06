@@ -11,8 +11,8 @@
 #define PROB_NOTCP_CAPS 0.0375
 #define PROB_CB_SYM 0.1125
 #define PROB_NOTCB_SYM 0
-#define PROB_CB_QUOTE 0.1125
-#define PROB_NOTCB_QUOTE 0
+#define PROB_CB_QUOTE 0.5125
+#define PROB_NOTCB_QUOTE 0.1625
 #define PROB_CB_FORWARD 0.15
 #define PROB_NOTCB_FORWARD 0
 #define THRESHOLD 50
@@ -140,8 +140,8 @@ int has_fw_reference(char title[MAX_SIZE][MAX_SIZE], const int size){
 int has_citation(char title[MAX_SIZE][MAX_SIZE], const int size){
     int cite_flag = FALSE;
     int i = 0;
-    for(i = 0; i < size; i++){
-        if(title[i][0] == '"'|| title[i][0] == '\''){
+    for(i = 0; i < size-1; i++){
+        if(title[i][0] == '"'|| title[i][0] == '\'' || title[i][strlen(title[i])-1] == ':'){
             cite_flag = TRUE;
         }
     }
