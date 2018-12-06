@@ -27,9 +27,11 @@ int has_all_caps(char [MAX_SIZE][MAX_SIZE], const int );
 int has_special_sym (char[MAX_SIZE][MAX_SIZE], const int);
 double get_score(const int, const int, const int, const int);
 void write_to_txt (FILE *, char [MAX_SIZE][MAX_SIZE], const int , const double);
+void getf1_score(const int , const int , const int , const int);
 
 int main (void) {
     int has_fw = 0, has_cite = 0, has_caps = 0, has_sp_sym = 0;
+    int false_positive = 0, true_positive = 0, false_negative = 0, true_negative = 0;
     char title[MAX_SIZE][MAX_SIZE];
     int size = 0;
     FILE * input_file = NULL, *cb_file = NULL, *non_cb_file = NULL;
@@ -56,8 +58,18 @@ int main (void) {
             score = get_score(has_fw, has_sp_sym, has_cite, has_caps);
             printf("Og resultatet er %lf\n", score);
             if(score > THRESHOLD) {
+                if (strcmp(title[size-1], "clickbait") == 0 ) {
+                    true_positive++;
+                } else {
+                    false_positive++;
+                }
                 write_to_txt(cb_file, title, size, score);
             } else {
+                if (strcmp(title[size-1], "clickbait") == 0 ) {
+                    false_negative++;
+                } else {
+                    true_negative++;
+                }
                 write_to_txt(non_cb_file, title, size, score);
             }
 
@@ -67,6 +79,7 @@ int main (void) {
     fclose(input_file);
     fclose(cb_file);
 	fclose(non_cb_file);
+    getf1_score(true_positive, false_positive, true_negative, false_negative);
     return 0;
 }
 
@@ -93,7 +106,7 @@ int get_title (char title[MAX_SIZE][MAX_SIZE], FILE *file) {
             }
         }
     } else {
-        printf("END OF FILE REACHED");
+        printf("END OF FILE REACHED\n");
         return 0;
    }
    return size;
@@ -185,9 +198,6 @@ double get_score(const int fw_flag, const int sym_flag, const int quote_flag, co
         cb_caps = 1.0 - cb_caps;
         notcb_caps = 1.0 - notcb_caps;
     }   
-    
-
-  
     is_cb = cb_stedord * cb_eq_marks * cb_quotes * cb_caps;
     isnot_cb = notcb_stedord * notcb_eq_marks * notcb_quotes * notcb_caps;
     
@@ -207,6 +217,23 @@ void write_to_txt (FILE *file, char title[MAX_SIZE][MAX_SIZE], const int size, c
         fprintf(file, "%s ", title[i]);
 	}
     fprintf(file,"\" Score %.0lf\"\n",score);
+}
+
+
+
+
+void getf1_score(const int true_positives, const int false_positives, const int true_negatives, const int false_negatives){
+    double f1 = 0;
+    int recall = 0, precision = 0;
+ 
+    
+    precision = true_positives/(false_positives + true_positives);
+    recall = true_positives/(false_positives + true_negatives);
+    
+    f1 =(double) 2*(recall * precision)/(recall + precision);
+    
+    printf("true positives: %d\t false positives: %d\n Recall: %d precision: %d\n F1 score: %lf\n",true_positives, false_positives, recall, precision, f1);
+
 }
 
 /* debug function */
