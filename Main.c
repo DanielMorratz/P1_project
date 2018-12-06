@@ -64,7 +64,6 @@ int main (void) {
         } 
     }
     while(size > 0);
-    printf("its works");
     fclose(input_file);
     fclose(cb_file);
 	fclose(non_cb_file);
