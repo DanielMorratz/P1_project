@@ -8,14 +8,14 @@
 #define FALSE 0
 #define AMOUNT_OF_PRONOUNS 7*2
 #define PROB_CP_CAPS 0.075
-#define PROB_NOTCP_CAPS 0.0375
+#define PROB_NOTCP_CAPS 0.1
 #define PROB_CB_SYM 0.1125
 #define PROB_NOTCB_SYM 0
 #define PROB_CB_QUOTE 0.5125
 #define PROB_NOTCB_QUOTE 0.1625
 #define PROB_CB_FORWARD 0.15
 #define PROB_NOTCB_FORWARD 0
-#define THRESHOLD 50
+#define THRESHOLD 65
 
 
 /*prototypes*/
@@ -37,7 +37,6 @@ int main (void) {
     FILE * input_file = NULL, *cb_file = NULL, *non_cb_file = NULL;
    
     double score = 0;
-   
     input_file = fopen("overskrifter.txt","r");
     cb_file = fopen("clickbait.txt", "w");
 	non_cb_file = fopen("non_clickbait.txt", "w");
@@ -50,22 +49,24 @@ int main (void) {
     do {
         size = get_title(title, input_file);
         if(size > 0) {
-            print_array(title,size);
+            /* Debug print
+            print_array(title,size); */
             has_fw   = has_fw_reference(title, size);
             has_cite = has_citation(title,size);
             has_caps = has_all_caps(title,size);
             has_sp_sym = has_special_sym(title, size);
             score = get_score(has_fw, has_sp_sym, has_cite, has_caps);
-            printf("Og resultatet er %lf\n", score);
+            /* debug print
+            printf("Og resultatet er %lf\n", score);*/
             if(score > THRESHOLD) {
-                if (strcmp(title[size-1], "clickbait") == 0 ) {
+                if (strcmp(title[0], "clickbait") == 0 ) {
                     true_positive++;
                 } else {
                     false_positive++;
                 }
                 write_to_txt(cb_file, title, size, score);
             } else {
-                if (strcmp(title[size-1], "clickbait") == 0 ) {
+                if (strcmp(title[0], "clickbait") == 0 ) {
                     false_negative++;
                 } else {
                     true_negative++;
@@ -79,22 +80,23 @@ int main (void) {
     fclose(input_file);
     fclose(cb_file);
 	fclose(non_cb_file);
+    
     getf1_score(true_positive, false_positive, true_negative, false_negative);
+
     return 0;
 }
 
 int get_title (char title[MAX_SIZE][MAX_SIZE], FILE *file) {
     char string[MAX_SIZE];
     int done = 0, size = 0;
-   
     if (fscanf(file," %*[^<]s ") != EOF) {
       
         fscanf(file," %s ",string);
-        if (strcmp(string, "<Title>") == 0) {
+        if (strcmp(string, "<title>") == 0) {
             while (!done) {
                 fscanf(file," %s ",string); 
             
-                if (strcmp(string,"<\\Title>")== 0) {
+                if (strcmp(string,"<\\title>")== 0) {
                     done = 1;
                
                 } else {
@@ -203,8 +205,8 @@ double get_score(const int fw_flag, const int sym_flag, const int quote_flag, co
     
     bayes_score = is_cb/(is_cb+isnot_cb)*100;
     
-    
-    printf("is_cb = %lf\nisnot_cb = %lf\n", is_cb, isnot_cb);
+    /* debug print*/
+    /*printf("is_cb = %lf\nisnot_cb = %lf\n", is_cb, isnot_cb); */
     return bayes_score;
 }
 
@@ -223,16 +225,15 @@ void write_to_txt (FILE *file, char title[MAX_SIZE][MAX_SIZE], const int size, c
 
 
 void getf1_score(const int true_positives, const int false_positives, const int true_negatives, const int false_negatives){
-    double f1 = 0;
-    int recall = 0, precision = 0;
+    double f1 = 0, recall = 0, precision = 0;
  
     
-    precision = true_positives/(false_positives + true_positives);
-    recall = true_positives/(false_positives + true_negatives);
+    precision = (double) true_positives/(false_positives + true_positives);
+    recall =(double) true_positives/(false_positives + true_negatives);
     
     f1 =(double) 2*(recall * precision)/(recall + precision);
-    
-    printf("true positives: %d\t false positives: %d\n Recall: %d precision: %d\n F1 score: %lf\n",true_positives, false_positives, recall, precision, f1);
+    printf("true positives: %d\t false positives: %d\t, true_negatives%d\t false_negatives%d\n",true_positives, false_positives,true_negatives, false_negatives);
+    printf(" Recall: %lf precision: %lf\n F1 score: %lf\n", recall, precision, f1);
 
 }
 
