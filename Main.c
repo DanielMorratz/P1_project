@@ -40,6 +40,7 @@ int main (void) {
     input_file = fopen("overskrifter.txt","r");
     cb_file = fopen("clickbait.txt", "w");
 	non_cb_file = fopen("non_clickbait.txt", "w");
+    /* Lukker programmet hvis filen med overskrifter ikke eksisterer*/
     if (input_file == NULL) {
         printf("ERROR FILE DOES NOT EXIST");
         exit(EXIT_FAILURE);
@@ -86,6 +87,7 @@ int main (void) {
     return 0;
 }
 
+/* Indlæster en oerskrift ind i et string array*/
 int get_title (char title[MAX_SIZE][MAX_SIZE], FILE *file) {
     char string[MAX_SIZE];
     int done = 0, size = 0;
@@ -115,7 +117,7 @@ int get_title (char title[MAX_SIZE][MAX_SIZE], FILE *file) {
 }
 
 
-/* Måske bare brug strcmp hele vejen */
+/* Tjekker om et af ordene fra vores ordliste af stedord, er i sætningen */
 int has_fw_reference(char title[MAX_SIZE][MAX_SIZE], const int size){
     int i = 0, fw_flag = FALSE, j = 0;
     char fw_ref_words[AMOUNT_OF_PRONOUNS][AMOUNT_OF_PRONOUNS] ={"her","Her","Saadan", "saadan","Saa", "saa",
@@ -139,6 +141,7 @@ int has_fw_reference(char title[MAX_SIZE][MAX_SIZE], const int size){
     return fw_flag;
 }
 
+/* tjekker om der er et citat i sætningen */
 int has_citation(char title[MAX_SIZE][MAX_SIZE], const int size){
     int cite_flag = FALSE;
     int i = 0;
@@ -151,6 +154,7 @@ int has_citation(char title[MAX_SIZE][MAX_SIZE], const int size){
     return cite_flag;
 }
 
+/* Tjekker om de 2 første bogstaver af et ord er store, hvilket betyder at hele ordet er i all caps, eller at journalisten ikke kan stave */
 int has_all_caps(char title[MAX_SIZE][MAX_SIZE], const int size){
     int i = 0, caps_flag = FALSE;
    
@@ -162,6 +166,7 @@ int has_all_caps(char title[MAX_SIZE][MAX_SIZE], const int size){
     return caps_flag;
 }
 
+/* tjekker om et ord slutter på ! eller ?*/
 int has_special_sym (char title[MAX_SIZE][MAX_SIZE], const int size) {
 	int i = 0, special_flag = FALSE;
 	for (i = 0; i < size; i++) {
@@ -177,7 +182,7 @@ int has_special_sym (char title[MAX_SIZE][MAX_SIZE], const int size) {
 double get_score(const int fw_flag, const int sym_flag, const int quote_flag, const int caps_flag) {
     
     /* Sandyndligheden for artiklen er clickbait NÅR feature forekommer
-    Fastlagt udfra Antal forekomster / Antal_CB_artikler */
+    Fastlagt udfra (Antal forekomster i CB artikler / Antal CB artikler) */
     double cb_stedord = PROB_CB_FORWARD, cb_eq_marks = PROB_CB_SYM, cb_quotes = PROB_CB_QUOTE, cb_caps = PROB_CP_CAPS;
     
     /* Disse variabler fortæller, hvor mange gange forekommer feature i IKKE clickbait artikler (som vi har label't)*/ 
@@ -211,7 +216,7 @@ double get_score(const int fw_flag, const int sym_flag, const int quote_flag, co
 }
 
 
-
+/* Skriver en sætning ind i den respektive fil */
 void write_to_txt (FILE *file, char title[MAX_SIZE][MAX_SIZE], const int size, const double score) {
 	int i = 0;
 	
@@ -223,7 +228,7 @@ void write_to_txt (FILE *file, char title[MAX_SIZE][MAX_SIZE], const int size, c
 
 
 
-
+/* Beregner recall, precision og f1 score ud fra positiver og negativer */
 void getf1_score(const int true_positives, const int false_positives, const int true_negatives, const int false_negatives){
     double f1 = 0, recall = 0, precision = 0;
  
