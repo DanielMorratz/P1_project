@@ -236,7 +236,7 @@ void getf1_score(const int true_positives, const int false_positives, const int 
     precision = (double) true_positives/(false_positives + true_positives);
     recall =(double) true_positives/(false_positives + true_negatives);
     
-    f1 =(double) 2*(recall * precision)/(recall + precision);
+    f1 = 2*(recall * precision)/(recall + precision);
     printf("true positives: %d\t false positives: %d\t, true_negatives: %d\t false_negatives: %d\n",true_positives, false_positives,true_negatives, false_negatives);
     printf(" Recall: %lf precision: %lf\n F1 score: %lf\n", recall, precision, f1);
 
