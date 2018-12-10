@@ -157,7 +157,7 @@ int has_citation(char title[MAX_SIZE][MAX_SIZE], const int size){
 /* Tjekker om de 2 første bogstaver af et ord er store, hvilket betyder at hele ordet er i all caps, eller at journalisten ikke kan stave */
 int has_all_caps(char title[MAX_SIZE][MAX_SIZE], const int size){
     int i = 0, caps_flag = FALSE;
-   
+    
     for( i = 0; i < size; i++){
         if((isupper(title[i][0]) && isupper(title[i][1])) || (isupper(title[i][1]) && isupper(title[i][2]))) {
             caps_flag = TRUE;
