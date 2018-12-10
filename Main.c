@@ -11,8 +11,8 @@
 #define PROB_NOTCP_CAPS 0.1
 #define PROB_CB_SYM 0.1125
 #define PROB_NOTCB_SYM 0
-#define PROB_CB_QUOTE 0.5125
-#define PROB_NOTCB_QUOTE 0.1625
+#define PROB_CB_QUOTE 0.525
+#define PROB_NOTCB_QUOTE 0.175
 #define PROB_CB_FORWARD 0.15
 #define PROB_NOTCB_FORWARD 0
 #define THRESHOLD 65
@@ -50,7 +50,7 @@ int main (void) {
     do {
         size = get_title(title, input_file);
         if(size > 0) {
-            /* Debug print
+            /*
             print_array(title,size); */
             has_fw   = has_fw_reference(title, size);
             has_cite = has_citation(title,size);
