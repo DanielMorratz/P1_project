@@ -159,7 +159,7 @@ int has_all_caps(char title[MAX_SIZE][MAX_SIZE], const int size){
     int i = 0, caps_flag = FALSE;
    
     for( i = 0; i < size; i++){
-        if((isupper(title[i][0]) && isupper(title[i][1])) || (isupper(title[i][1]) && isupper(title[i][2])){
+        if((isupper(title[i][0]) && isupper(title[i][1])) || (isupper(title[i][1]) && isupper(title[i][2]))) {
             caps_flag = TRUE;
         }
     }
