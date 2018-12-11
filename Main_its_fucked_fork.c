@@ -36,15 +36,19 @@ void getf1_score(const int , const int , const int , const int);
 
 int main (void) {
     int flags[AMOUNT_OF_FLAGS];
-    int false_positive = 0, true_positive = 0, false_negative = 0, true_negative = 0, size = 0;
+    int false_positive = 0, true_positive = 0, false_negative = 0, true_negative = 0, size = 0, done = 0;
     char title[MAX_SIZE][MAX_SIZE]; 
     double probabilities[AMOUNT_OF_FEATURES*2];
     FILE * input_file = NULL, *cb_file = NULL, *non_cb_file = NULL;
+    FILE *training_clickbait = NULL, *training_nonclickbait = NULL;
    
+
     double score = 0;
     input_file = fopen("overskrifter.txt","r");
     cb_file = fopen("clickbait.txt", "w");
 	non_cb_file = fopen("non_clickbait.txt", "w");
+    training_clickbait = fopen("training_clickbaitdata.txt","r");
+    training_nonclickbait = fopen("training_nonclickbaitdata.txt","r"); 
     /* Lukker programmet hvis filen med overskrifter ikke eksisterer*/
     if (input_file == NULL) {
         printf("ERROR FILE DOES NOT EXIST");
@@ -52,7 +56,7 @@ int main (void) {
     }
    
    
-    do {
+    while(!done) {
         size = get_title(title, input_file);
         if(size > 0) {
             /*
@@ -80,9 +84,9 @@ int main (void) {
                 }
                 write_to_txt(non_cb_file, title, size, score);
             }
-        } 
+        } else { 
+            done = 1;  
     }
-    while(size > 0);
     fclose(input_file);
     fclose(cb_file);
 	fclose(non_cb_file);
