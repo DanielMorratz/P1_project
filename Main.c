@@ -177,8 +177,6 @@ int has_special_sym (char title[MAX_SIZE][MAX_SIZE], const int size) {
 	return special_flag;
 }
 
-
-
 double get_score(const int fw_flag, const int sym_flag, const int quote_flag, const int caps_flag) {
     
     /* Sandyndligheden for artiklen er clickbait NÅR feature forekommer
