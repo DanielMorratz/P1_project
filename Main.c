@@ -120,7 +120,7 @@ int get_title (char title[MAX_SIZE][MAX_SIZE], FILE *file) {
 /* Tjekker om et af ordene fra vores ordliste af stedord, er i sætningen */
 int has_fw_reference(char title[MAX_SIZE][MAX_SIZE], const int size){
     int i = 0, fw_flag = FALSE, j = 0;
-    char fw_ref_words[AMOUNT_OF_PRONOUNS][AMOUNT_OF_PRONOUNS] ={"her","Her","Saadan", "saadan","Saa", "saa",
+    char fw_ref_words[AMOUNT_OF_PRONOUNS][AMOUNT_OF_PRONOUNS] ={"Her","her","Saadan", "saadan","Saa", "saa",
     "Derfor", "derfor","Denne","denne","Disse","disse","dette","Dette"};
 
     /* First loop: checks the first characters of each letter
@@ -247,7 +247,7 @@ void print_array (char title[MAX_SIZE][MAX_SIZE], const int size) {
     int i = 0;
     for(i = 0; i < size;i++) {
         printf("%s ",title[i]);
-   }
-   printf("\n");
-   return;
+    }
+    printf("\n");
+    return;
 }
