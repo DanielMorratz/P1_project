@@ -32,24 +32,27 @@ void getf1_score(const int , const int , const int , const int);
 int main (void) {
     int has_fw = 0, has_cite = 0, has_caps = 0, has_sp_sym = 0;
     int false_positive = 0, true_positive = 0, false_negative = 0, true_negative = 0,
-    size = 0;
+    size = 0, done = 0;
     double score = 0;
     char title[MAX_SIZE][MAX_SIZE];
     FILE * input_file = NULL, *cb_file = NULL, *non_cb_file = NULL;
+    FILE *training_clickbait = NULL, *training_nonclickbait = NULL;
    
+    training_clickbait = fopen("training_clickbaitdata.txt","r");
+    training_nonclickbait = fopen("training_nonclickbaitdata.txt","r"); 
+    
     input_file = fopen("overskrifter.txt","r");
     cb_file = fopen("clickbait.txt", "w");
 	non_cb_file = fopen("non_clickbait.txt", "w");
     /* Lukker programmet hvis filen med overskrifter ikke eksisterer*/
-    if (input_file == NULL) {
+    if (input_file == NULL ||  training_clickbait == NULL || training_nonclickbait == NULL){
         printf("ERROR FILE DOES NOT EXIST");
         exit(EXIT_FAILURE);
     }
-   
-   
-    do {
+    
+    while(!done) {
         size = get_title(title, input_file);
-        if(size > 0) {
+        if(size > 0){
             /*
             print_array(title,size); */
             has_fw   = has_fw_reference(title, size);
@@ -74,10 +77,11 @@ int main (void) {
                 }
                 write_to_txt(non_cb_file, title, size, score);
             }
-
-        } 
+        } else { 
+            done = 1; 
+        }
     }
-    while(size > 0);
+
     fclose(input_file);
     fclose(cb_file);
 	fclose(non_cb_file);
@@ -170,10 +174,11 @@ int has_all_caps(char title[MAX_SIZE][MAX_SIZE], const int size){
 int has_special_sym (char title[MAX_SIZE][MAX_SIZE], const int size) {
 	int i = 0, special_flag = FALSE;
 	for (i = 0; i < size; i++) {
-        if (title[i][strlen(title[i])-1] == '!' || title[i][strlen(title[i])-1] == '?') {
+         if(strstr(title[i],"!") != NULL || strstr(title[i],"?") != NULL) {
 			special_flag = TRUE;
 		}
 	}
+   
 	return special_flag;
 }
 
