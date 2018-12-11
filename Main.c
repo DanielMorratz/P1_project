@@ -31,12 +31,12 @@ void getf1_score(const int , const int , const int , const int);
 
 int main (void) {
     int has_fw = 0, has_cite = 0, has_caps = 0, has_sp_sym = 0;
-    int false_positive = 0, true_positive = 0, false_negative = 0, true_negative = 0;
+    int false_positive = 0, true_positive = 0, false_negative = 0, true_negative = 0,
+    size = 0;
+    double score = 0;
     char title[MAX_SIZE][MAX_SIZE];
-    int size = 0;
     FILE * input_file = NULL, *cb_file = NULL, *non_cb_file = NULL;
    
-    double score = 0;
     input_file = fopen("overskrifter.txt","r");
     cb_file = fopen("clickbait.txt", "w");
 	non_cb_file = fopen("non_clickbait.txt", "w");
