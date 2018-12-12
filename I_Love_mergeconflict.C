@@ -35,6 +35,8 @@ void write_to_txt (FILE *, char [MAX_SIZE][MAX_SIZE], const int , const double);
 void getf1_score(const int , const int , const int , const int);
 int open_ui(void);
 
+void calculate_probabilities(FILE*, int flags[], int);
+
 int main (void) {
     int flags[AMOUNT_OF_FLAGS];
     int false_positive = 0, true_positive = 0, false_negative = 0, true_negative = 0, size = 0, done = 0;
@@ -55,19 +57,7 @@ int main (void) {
         printf("ERROR FILE DOES NOT EXIST");
         exit(EXIT_FAILURE);
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-    if (input_file == NULL || probability_file == NULL) {
-        printf("ERROR FILE DOES NOT EXIST");
-        exit(EXIT_FAILURE);
-    }
-=======
->>>>>>> 9b4d946ee3a324874b2d64a6abeb19e2a4adfaf8
     
-=======
-   
-   
->>>>>>> parent of 6883dde... Test version.
     while(!done) {
         size = get_title(title, input_file);
         if(size > 0) {
@@ -77,7 +67,8 @@ int main (void) {
             flags[has_cite] = has_citation(title,size);
             flags[has_caps] = has_all_caps(title,size);
             flags[has_sp_sym] = has_special_sym(title, size);
-            
+
+
             score = get_score(flags, probabilities);
             /* debug print 
             printf("Og resultatet er %lf\n", score);*/
@@ -134,6 +125,17 @@ int get_title (char title[MAX_SIZE][MAX_SIZE], FILE *file) {
         return 0;
    }
    return size;
+}
+
+void calculate_probabilities(FILE probabilities_for_feature, int flags[AMOUNT_OF_FLAGS], int size){
+    int i = 0;
+
+    
+    for(i = 0; i < AMOUNT_OF_FEATURES; i++){
+        fprintf(probabilities_for_feature, "%.5lf\n",(double)(flags[i]/size)) );
+    }
+    
+    return 0;
 }
 
 
@@ -210,10 +212,7 @@ double get_score(int flags[], double probabilities[]) {
     probabilities[cb_eq_marks] = PROB_CB_SYM;
     probabilities[cb_quotes] = PROB_CB_QUOTE;
     probabilities[cb_caps] = PROB_CB_CAPS;
-    
-    
-    
-    
+       
     for (i = 0; i < AMOUNT_OF_FEATURES;i++) {
         if (flags[i] == 0) {
             probabilities[i] = 1-probabilities[i];
@@ -275,7 +274,7 @@ int open_ui(void)
         printf("\n\n----------------------------------------------[Clickbait Detector]----------------------------------------------\n\n");
         printf("\tDu har foelgende muligheder:\n\n");
         printf("\t0. Luk programmet\n");
-        printf("\t1. Traen programet med datasaet \"training_nonclickbaitdata.txt\" og \"training_clickbaitdata.txt\"\n")
+        printf("\t1. Traen programet med datasaet \"training_nonclickbaitdata.txt\" og \"training_clickbaitdata.txt\"\n");
         printf("\t2. Udregn F1 score\n");
         printf("\t3. Scan \"overskrifter.txt\" og retuner resultat til \"clickbait.txt\" og \"non_clickbait.txt\"\n\n");
         printf("----------------------------------------------------------------------------------------------------------------\n\n");
