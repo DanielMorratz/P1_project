@@ -33,7 +33,6 @@ int has_special_sym (char[MAX_SIZE][MAX_SIZE], const int);
 double get_score(int [], double[], double[]);
 void write_to_txt (FILE *, char [MAX_SIZE][MAX_SIZE], const int , const double);
 void getf1_score(const int , const int , const int , const int);
-int open_ui(void);
 
 int main (void) {
     int flags[AMOUNT_OF_FLAGS];
@@ -58,13 +57,10 @@ int main (void) {
     } else {
         probability_file = fopen("probabilities.txt", "r");
     }
-<<<<<<< HEAD
     if (input_file == NULL || probability_file == NULL) {
-        printf("ERROR FILE DOES NOT EXIST");
-        exit(EXIT_FAILURE);
+    printf("ERROR FILE DOES NOT EXIST");
+    exit(EXIT_FAILURE);
     }
-=======
->>>>>>> 9b4d946ee3a324874b2d64a6abeb19e2a4adfaf8
     
     while(!done) {
         
@@ -297,30 +293,4 @@ void print_array (char title[MAX_SIZE][MAX_SIZE], const int size) {
     }
    printf("\n");
    return;
-}
-
-/* Åben UI som spørg brugeren om hvad de ønsker at gøre */
-int open_ui(void)
-{
-    int val = -1;
-    while(val > 3 || val < 0)
-    {
-        printf("\n\n----------------------------------------------[Clickbait Detector]----------------------------------------------\n\n");
-        printf("\tDu har foelgende muligheder:\n\n");
-        printf("\t0. Luk programmet\n");
-        printf("\t1. Traen programet med datasaet \"training_nonclickbaitdata.txt\" og \"training_clickbaitdata.txt\"\n")
-        printf("\t2. Udregn F1 score\n");
-        printf("\t3. Scan \"overskrifter.txt\" og retuner resultat til \"clickbait.txt\" og \"non_clickbait.txt\"\n\n");
-        printf("----------------------------------------------------------------------------------------------------------------\n\n");
-        printf("Input: ");
-        scanf(" %d", &val);
-        printf("\n\n");
-
-        if(val == 0)
-        {
-            printf("Afslutter program...\n");
-            exit(0);
-        }
-    }
-    return val;
 }
