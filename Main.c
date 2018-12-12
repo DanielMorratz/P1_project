@@ -21,7 +21,7 @@
 
 enum flag { has_fw = 0, has_cite = 1, has_caps = 2, has_sp_sym = 3 };
     
-enum probability { cb_stedord = 0, cb_quotes = 1, cb_caps = 2, cb_eq_marks = 3, notcb_stedord = 0, notcb_caps = 1, notcb_quotes = 2, notcb_eq_marks = 3 };
+enum probability { cb_stedord = 0, cb_quotes = 1, cb_caps = 2, cb_eq_marks = 3, notcb_stedord = 4, notcb_caps = 5, notcb_quotes = 6, notcb_eq_marks = 7 };
 
 /*prototypes*/
 int get_title (char [MAX_SIZE][MAX_SIZE], FILE *);
@@ -30,18 +30,18 @@ int has_fw_reference(char[MAX_SIZE][MAX_SIZE], const int);
 int has_citation(char [MAX_SIZE][MAX_SIZE], const int );
 int has_all_caps(char [MAX_SIZE][MAX_SIZE], const int );
 int has_special_sym (char[MAX_SIZE][MAX_SIZE], const int);
-double get_score(int [], double[], double[]);
+double get_score(int [], double[]);
 void write_to_txt (FILE *, char [MAX_SIZE][MAX_SIZE], const int , const double);
 void getf1_score(const int , const int , const int , const int);
 int open_ui(void);
 
 int main (void) {
     int flags[AMOUNT_OF_FLAGS];
-    int false_positive = 0, true_positive = 0, false_negative = 0, true_negative = 0, size = 0, done = 0, user_input = 0, is_clickbait = 0, amount = 0;
+    int false_positive = 0, true_positive = 0, false_negative = 0, true_negative = 0, size = 0, done = 0;
     char title[MAX_SIZE][MAX_SIZE]; 
-    double cb_probabilities[AMOUNT_OF_FEATURES], non_cb_probabilities[AMOUNT_OF_FEATURES] ;
-    FILE *input_file = NULL, *cb_file = NULL, *non_cb_file = NULL;
-    FILE *training_clickbait = NULL, *training_nonclickbait = NULL, *probability_file = NULL;
+    double probabilities[AMOUNT_OF_FEATURES*2];
+    FILE * input_file = NULL, *cb_file = NULL, *non_cb_file = NULL;
+    FILE *training_clickbait = NULL, *training_nonclickbait = NULL;
    
 
     double score = 0;
@@ -51,13 +51,11 @@ int main (void) {
     training_clickbait = fopen("training_clickbaitdata.txt","r");
     training_nonclickbait = fopen("training_nonclickbaitdata.txt","r"); 
     /* Lukker programmet hvis filen med overskrifter ikke eksisterer*/
-
-    
-    if (user_input == 1) {
-        probability_file = fopen("probabilities.txt","w");
-    } else {
-        probability_file = fopen("probabilities.txt", "r");
+    if (input_file == NULL) {
+        printf("ERROR FILE DOES NOT EXIST");
+        exit(EXIT_FAILURE);
     }
+<<<<<<< HEAD
 <<<<<<< HEAD
     if (input_file == NULL || probability_file == NULL) {
         printf("ERROR FILE DOES NOT EXIST");
@@ -66,87 +64,46 @@ int main (void) {
 =======
 >>>>>>> 9b4d946ee3a324874b2d64a6abeb19e2a4adfaf8
     
+=======
+   
+   
+>>>>>>> parent of 6883dde... Test version.
     while(!done) {
-        
-        if(user_input  != 3) {
-            if (is_clickbait = FALSE) {
-                size = get_title(title, non_cb_file);
-            } else {
-                size = get_title(title, cb_file);
-            }
-            if (user_input == 1) {
-                if(size > 0) {
-                    flags[has_fw] += has_fw_reference(title, size);
-                    flags[has_cite]+= has_citation(title,size);
-                    flags[has_caps] += has_all_caps(title,size);
-                    flags[has_sp_sym] += has_special_sym(title, size);
-                    amount++;
-                } else {
-                    calculate_probabilities(flags, amount);
-                    amount = 0;
-                    if(is_clickbait == FALSE) {
-                        is_clickbait == TRUE;
-                    } else {
-                        done = TRUE;
-                    }
-                }
-            }else {
-                if(size > 0) {
-                    /*
-                    print_array(title,size); */
-                    flags[has_fw] = has_fw_reference(title, size);
-                    flags[has_cite] = has_citation(title,size);
-                    flags[has_caps] = has_all_caps(title,size);
-                    flags[has_sp_sym] = has_special_sym(title, size);
-                    score = get_score(flags, cb_probabilities, non_cb_probabilities);
-                    if(score > THRESHOLD) {
-                        if (is_clickbait == TRUE ) {
-                            true_positive++;
-                        } else {
-                            false_positive++;
-                        }
-                    } else {
-                        if (strcmp(title[0], "clickbait") == 0 ) {
-                            false_negative++;
-                        } else {
-                            true_negative++;
-                        }
-                    }
-                }
-                if(is_clickbait == FALSE) {
-                    is_clickbait == TRUE;
-                } else {
-                    done = TRUE;
-                    getf1_score(true_positive, false_positive, true_negative, false_negative);
-                }
-            }
-        } else {
-            size = get_title(title, input_file);
-            if(size > 0) {
-                /*
-                print_array(title,size); */
-                flags[has_fw] = has_fw_reference(title, size);
-                flags[has_cite] = has_citation(title,size);
-                flags[has_caps] = has_all_caps(title,size);
-                flags[has_sp_sym] = has_special_sym(title, size);
+        size = get_title(title, input_file);
+        if(size > 0) {
+            /*
+            print_array(title,size); */
+            flags[has_fw] = has_fw_reference(title, size);
+            flags[has_cite] = has_citation(title,size);
+            flags[has_caps] = has_all_caps(title,size);
+            flags[has_sp_sym] = has_special_sym(title, size);
             
-                score = get_score(flags, cb_probabilities, non_cb_probabilities);
-                /* debug print 
-                printf("Og resultatet er %lf\n", score);*/
-                if(score > THRESHOLD) {
-                    write_to_txt(cb_file, title, size, score);
+            score = get_score(flags, probabilities);
+            /* debug print 
+            printf("Og resultatet er %lf\n", score);*/
+            if(score > THRESHOLD) {
+                if (strcmp(title[0], "clickbait") == 0 ) {
+                    true_positive++;
                 } else {
-                    write_to_txt(non_cb_file, title, size, score);
+                    false_positive++;
                 }
-            } else { 
-                done = 1;  
+                write_to_txt(cb_file, title, size, score);
+            } else {
+                if (strcmp(title[0], "clickbait") == 0 ) {
+                    false_negative++;
+                } else {
+                    true_negative++;
+                }
+                write_to_txt(non_cb_file, title, size, score);
             }
+        } else { 
+            done = 1;  
         }
     }
     fclose(input_file);
     fclose(cb_file);
 	fclose(non_cb_file);
-
+    getf1_score(true_positive, false_positive, true_negative, false_negative);
     return 0;
 }
 
@@ -239,23 +196,33 @@ int has_special_sym (char title[MAX_SIZE][MAX_SIZE], const int size) {
 	return special_flag;
 }
 
-double get_score(int flags[], double cb_probabilities[], double non_cb_probabilities[]) {
+double get_score(int flags[], double probabilities[]) {
     
     double bayes_score, is_cb, isnot_cb;
     /* Hvis en feature ikke er fundet er sandsynligheden 1-feature*/
     int i = 0;
     
+    probabilities[notcb_stedord] = PROB_NOTCB_FORWARD;
+    probabilities[notcb_eq_marks] = PROB_NOTCB_SYM;
+    probabilities[notcb_quotes] = PROB_NOTCB_QUOTE;
+    probabilities[notcb_caps] = PROB_NOTCB_CAPS;
+    probabilities[cb_stedord] = PROB_CB_FORWARD; 
+    probabilities[cb_eq_marks] = PROB_CB_SYM;
+    probabilities[cb_quotes] = PROB_CB_QUOTE;
+    probabilities[cb_caps] = PROB_CB_CAPS;
+    
+    
     
     
     for (i = 0; i < AMOUNT_OF_FEATURES;i++) {
         if (flags[i] == 0) {
-            cb_probabilities[i] = 1-cb_probabilities[i];
-            non_cb_probabilities[i] = 1-non_cb_probabilities[i];
+            probabilities[i] = 1-probabilities[i];
+            probabilities[i+AMOUNT_OF_FEATURES] = 1-probabilities[i+AMOUNT_OF_FEATURES];
         }
     }
 
-    is_cb = (cb_probabilities[cb_stedord] * cb_probabilities[cb_eq_marks] * cb_probabilities[cb_quotes] * cb_probabilities[cb_caps]);
-    isnot_cb = (non_cb_probabilities[notcb_stedord] * non_cb_probabilities[notcb_eq_marks] * non_cb_probabilities[notcb_quotes] * non_cb_probabilities[notcb_caps]);
+    is_cb = (probabilities[cb_stedord] * probabilities[cb_eq_marks] * probabilities[cb_quotes] * probabilities[cb_caps]);
+    isnot_cb = (probabilities[notcb_stedord] * probabilities[notcb_eq_marks] * probabilities[notcb_quotes] * probabilities[notcb_caps]);
     
     bayes_score = is_cb/(is_cb+isnot_cb)*100;
     
