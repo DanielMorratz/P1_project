@@ -155,7 +155,7 @@ int get_title (char title[MAX_SIZE][MAX_SIZE], FILE *file) {
     char string[MAX_SIZE];
     int done = 0, size = 0;
     if (fscanf(file," %*[^<]s ") != EOF) {
-      
+        
         fscanf(file," %s ",string);
         if (strcmp(string, "<title>") == 0) {
             while (!done) {
@@ -351,6 +351,6 @@ void print_array (char title[MAX_SIZE][MAX_SIZE], const int size) {
     for(i = 0; i < size;i++) {
         printf("%s ",title[i]);
     }
-   printf("\n");
-   return;
+    printf("\n");
+    return;
 }
