@@ -69,9 +69,9 @@ int main (void) {
         
         if(user_input  != 3) {
             if (is_clickbait == FALSE) {
-                size = get_title(title, non_cb_file);
+                size = get_title(title, training_clickbait);
             } else {
-                size = get_title(title, cb_file);
+                size = get_title(title, training_nonclickbait);
             }
             if (user_input == 1) {
                 if(size > 0) {
@@ -80,14 +80,16 @@ int main (void) {
                     flags[has_caps] += has_all_caps(title,size);
                     flags[has_sp_sym] += has_special_sym(title, size);
                     amount++;
+                    printf("FFFS\n");
                 } else {
-                   
+                    
                     if(is_clickbait == FALSE) {
-                        calculate_probabilities(non_cb_file, flags, amount);
+                        
+                        calculate_probabilities(probability_file, flags, amount);
                         is_clickbait = TRUE;
                         amount = 0;
                     } else {
-                        calculate_probabilities(cb_file, flags, amount);
+                        calculate_probabilities(probability_file, flags, amount);
                         done = TRUE;
                     }
                 }
@@ -315,12 +317,10 @@ int open_ui(void){
     return val;
 }
 
-void calculate_probabilities(FILE *probabilities_for_feature, int flags[AMOUNT_OF_FLAGS], int size){
+void calculate_probabilities(FILE *probabilities_for_feature, int flags[AMOUNT_OF_FLAGS], int amount){
     int i = 0;
-
-    
     for(i = 0; i < AMOUNT_OF_FEATURES; i++){
-        fprintf(probabilities_for_feature, "%.5lf\n",(double)(flags[i]/size)) ;
+        fprintf(probabilities_for_feature, "%.5lf\n",(double)(flags[i]/amount)) ;
     }
     
     return ;
