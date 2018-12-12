@@ -33,6 +33,7 @@ int has_special_sym (char[MAX_SIZE][MAX_SIZE], const int);
 double get_score(int [], double[], double[]);
 void write_to_txt (FILE *, char [MAX_SIZE][MAX_SIZE], const int , const double);
 void getf1_score(const int , const int , const int , const int);
+int open_ui(void);
 
 int main (void) {
     int flags[AMOUNT_OF_FLAGS];
@@ -283,6 +284,30 @@ void getf1_score(const int true_positives, const int false_positives, const int 
     printf("true positives: %d\t false positives: %d\t, true_negatives: %d\t false_negatives: %d\n",true_positives, false_positives,true_negatives, false_negatives);
     printf(" Recall: %lf precision: %lf\n F1 score: %lf\n", recall, precision, f1);
 
+}
+/* Åben UI som spørg brugeren om hvad de ønsker at gøre */
+int open_ui(void){
+    int val = -1;
+    while(val > 3 || val < 0)
+    {
+        printf("\n\n----------------------------------------------[Clickbait Detector]----------------------------------------------\n\n");
+        printf("\tDu har foelgende muligheder:\n\n");
+        printf("\t0. Luk programmet\n");
+        printf("\t1. Traen programet med datasaet \"training_nonclickbaitdata.txt\" og \"training_clickbaitdata.txt\"\n");
+        printf("\t2. Udregn F1 score\n");
+        printf("\t3. Scan \"overskrifter.txt\" og retuner resultat til \"clickbait.txt\" og \"non_clickbait.txt\"\n\n");
+        printf("----------------------------------------------------------------------------------------------------------------\n\n");
+        printf("Input: ");
+        scanf(" %d", &val);
+        printf("\n\n");
+
+        if(val == 0)
+        {
+            printf("Afslutter program...\n");
+            exit(EXIT_SUCCESS);
+        }
+    }
+    return val;
 }
 
 /* debug function */
