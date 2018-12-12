@@ -34,6 +34,7 @@ double get_score(int [], double[], double[]);
 void write_to_txt (FILE *, char [MAX_SIZE][MAX_SIZE], const int , const double);
 void getf1_score(const int , const int , const int , const int);
 int open_ui(void);
+void calculate_probabilities(FILE*, int flags[], int);
 
 int main (void) {
     int flags[AMOUNT_OF_FLAGS];
@@ -52,6 +53,7 @@ int main (void) {
     training_nonclickbait = fopen("training_nonclickbaitdata.txt","r"); 
     /* Lukker programmet hvis filen med overskrifter ikke eksisterer*/
 
+    user_input = open_ui();    
     
     if (user_input == 1) {
         probability_file = fopen("probabilities.txt","w");
@@ -66,7 +68,7 @@ int main (void) {
     while(!done) {
         
         if(user_input  != 3) {
-            if (is_clickbait = FALSE) {
+            if (is_clickbait == FALSE) {
                 size = get_title(title, non_cb_file);
             } else {
                 size = get_title(title, cb_file);
@@ -79,11 +81,13 @@ int main (void) {
                     flags[has_sp_sym] += has_special_sym(title, size);
                     amount++;
                 } else {
-                    calculate_probabilities(flags, amount);
-                    amount = 0;
+                   
                     if(is_clickbait == FALSE) {
-                        is_clickbait == TRUE;
+                        calculate_probabilities(non_cb_file, flags, amount);
+                        is_clickbait = TRUE;
+                        amount = 0;
                     } else {
+                        calculate_probabilities(cb_file, flags, amount);
                         done = TRUE;
                     }
                 }
@@ -103,18 +107,19 @@ int main (void) {
                             false_positive++;
                         }
                     } else {
-                        if (strcmp(title[0], "clickbait") == 0 ) {
+                        if  (is_clickbait == TRUE) {
                             false_negative++;
                         } else {
                             true_negative++;
                         }
                     }
-                }
-                if(is_clickbait == FALSE) {
-                    is_clickbait == TRUE;
                 } else {
-                    done = TRUE;
-                    getf1_score(true_positive, false_positive, true_negative, false_negative);
+                    if(is_clickbait == FALSE) {
+                        is_clickbait = TRUE;
+                    } else {
+                        done = TRUE;
+                        getf1_score(true_positive, false_positive, true_negative, false_negative);
+                    }
                 }
             }
         } else {
@@ -308,6 +313,17 @@ int open_ui(void){
         }
     }
     return val;
+}
+
+void calculate_probabilities(FILE *probabilities_for_feature, int flags[AMOUNT_OF_FLAGS], int size){
+    int i = 0;
+
+    
+    for(i = 0; i < AMOUNT_OF_FEATURES; i++){
+        fprintf(probabilities_for_feature, "%.5lf\n",(double)(flags[i]/size)) ;
+    }
+    
+    return ;
 }
 
 /* debug function */
