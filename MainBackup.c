@@ -7,19 +7,12 @@
 #define TRUE 1
 #define FALSE 0
 #define AMOUNT_OF_PRONOUNS 7*2
-#define PROB_CB_CAPS 0.075
-#define PROB_NOTCB_CAPS 0.1
-#define PROB_CB_SYM 0.1125
-#define PROB_NOTCB_SYM 0
-#define PROB_CB_QUOTE 0.525
-#define PROB_NOTCB_QUOTE 0.175
-#define PROB_CB_FORWARD 0.15
-#define PROB_NOTCB_FORWARD 0
 #define THRESHOLD 65
 #define AMOUNT_OF_FLAGS 4
 #define AMOUNT_OF_FEATURES 4
 
 enum flag { has_fw = 0, has_cite = 1, has_caps = 2, has_sp_sym = 3 };
+
     
 enum probability { cb_stedord = 0, cb_quotes = 1, cb_caps = 2, cb_eq_marks = 3, notcb_stedord = 0, notcb_caps = 1, notcb_quotes = 2, notcb_eq_marks = 3 };
 
@@ -35,10 +28,11 @@ void write_to_txt (FILE *, char [MAX_SIZE][MAX_SIZE], const int , const double);
 void getf1_score(const int , const int , const int , const int);
 int open_ui(void);
 void calculate_probabilities(FILE*, int flags[], int);
+void get_prob(double[], double[], FILE *);
 
 int main (void) {
     int flags[AMOUNT_OF_FLAGS];
-    int false_positive = 0, true_positive = 0, false_negative = 0, true_negative = 0, size = 0, done = 0, user_input = 0, is_clickbait = 0, amount = 0;
+    int false_positive = 0, true_positive = 0, false_negative = 0, true_negative = 0, size = 0, done = 0, user_input = 0, is_clickbait = 0, amount = 0, i = 0;
     char title[MAX_SIZE][MAX_SIZE]; 
     double cb_probabilities[AMOUNT_OF_FEATURES], non_cb_probabilities[AMOUNT_OF_FEATURES] ;
     FILE *input_file = NULL, *cb_file = NULL, *non_cb_file = NULL;
@@ -54,11 +48,14 @@ int main (void) {
     /* Lukker programmet hvis filen med overskrifter ikke eksisterer*/
 
     user_input = open_ui();    
-    
+    for (i = 0; i < AMOUNT_OF_FLAGS; i++) {
+        flags[i] = 0;
+    }
     if (user_input == 1) {
         probability_file = fopen("probabilities.txt","w");
     } else {
         probability_file = fopen("probabilities.txt", "r");
+        get_prob(non_cb_probabilities, cb_probabilities, probability_file);
     }
     if (input_file == NULL || probability_file == NULL) {
     printf("ERROR FILE DOES NOT EXIST");
@@ -69,9 +66,9 @@ int main (void) {
         
         if(user_input  != 3) {
             if (is_clickbait == FALSE) {
-                size = get_title(title, training_clickbait);
-            } else {
                 size = get_title(title, training_nonclickbait);
+            } else {
+                size = get_title(title, training_clickbait);
             }
             if (user_input == 1) {
                 if(size > 0) {
@@ -80,7 +77,6 @@ int main (void) {
                     flags[has_caps] += has_all_caps(title,size);
                     flags[has_sp_sym] += has_special_sym(title, size);
                     amount++;
-                    printf("FFFS\n");
                 } else {
                     
                     if(is_clickbait == FALSE) {
@@ -319,11 +315,25 @@ int open_ui(void){
 
 void calculate_probabilities(FILE *probabilities_for_feature, int flags[AMOUNT_OF_FLAGS], int amount){
     int i = 0;
+    
     for(i = 0; i < AMOUNT_OF_FEATURES; i++){
-        fprintf(probabilities_for_feature, "%.5lf\n",(double)(flags[i]/amount)) ;
+        
+        fprintf(probabilities_for_feature, "%lf\n",(double)flags[i]/amount) ;
+        flags[i] = 0;
     }
     
     return ;
+}
+
+void get_prob(double nonclickbaitprob[], double clickbaitprob[], FILE *fp){
+    int i = 0;
+
+    for(i = 0; i < AMOUNT_OF_FEATURES; i++){
+        fscanf(fp," %lf ", nonclickbaitprob+i);
+    }
+    for(i = 0; i < AMOUNT_OF_FEATURES; i++){
+        fscanf(fp," %lf ", clickbaitprob+i);    
+    }    
 }
 
 /* debug function */
