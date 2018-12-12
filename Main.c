@@ -262,7 +262,8 @@ int open_ui(void)
     {
         printf("\n\n----------------------------------------------[Clickbait Detector]----------------------------------------------\n\n");
         printf("\tDu har foelgende muligheder:\n\n");
-        printf("\t0. Luk programmet\n\t1. Traen programet med datasaet \"training_nonclickbaitdata.txt\" og \"training_clickbaitdata.txt\"\n");
+        printf("\t0. Luk programmet\n");
+        printf("\t1. Traen programet med datasaet \"training_nonclickbaitdata.txt\" og \"training_clickbaitdata.txt\"\n")
         printf("\t2. Udregn F1 score\n");
         printf("\t3. Scan \"overskrifter.txt\" og retuner resultat til \"clickbait.txt\" og \"non_clickbait.txt\"\n\n");
         printf("----------------------------------------------------------------------------------------------------------------\n\n");
