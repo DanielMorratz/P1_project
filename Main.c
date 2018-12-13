@@ -7,7 +7,7 @@
 #define TRUE 1
 #define FALSE 0
 #define AMOUNT_OF_PRONOUNS 7*2
-#define THRESHOLD 65
+#define THRESHOLD 68
 #define AMOUNT_OF_FLAGS 4
 #define AMOUNT_OF_FEATURES 4
 
@@ -23,7 +23,7 @@ int has_fw_reference(char[MAX_SIZE][MAX_SIZE], const int);
 int has_citation(char [MAX_SIZE][MAX_SIZE], const int );
 int has_all_caps(char [MAX_SIZE][MAX_SIZE], const int );
 int has_special_sym (char[MAX_SIZE][MAX_SIZE], const int);
-double get_score(int [], double[], double[]);
+double get_probability(int [], double[], double[]);
 void write_to_txt (FILE *, char [MAX_SIZE][MAX_SIZE], const int , const double);
 void getf1_score(const int , const int , const int , const int);
 int open_ui(void);
@@ -97,7 +97,7 @@ int main (void) {
                     flags[has_cite] = has_citation(title,size);
                     flags[has_caps] = has_all_caps(title,size);
                     flags[has_sp_sym] = has_special_sym(title, size);
-                    score = get_score(flags, cb_probabilities, non_cb_probabilities);
+                    score = get_probability(flags, cb_probabilities, non_cb_probabilities);
                     if(score > THRESHOLD) {
                         if (is_clickbait == TRUE ) {
                             true_positive++;
@@ -130,7 +130,7 @@ int main (void) {
                 flags[has_caps] = has_all_caps(title,size);
                 flags[has_sp_sym] = has_special_sym(title, size);
             
-                score = get_score(flags, cb_probabilities, non_cb_probabilities);
+                score = get_probability(flags, cb_probabilities, non_cb_probabilities);
                 /* debug print 
                 printf("Og resultatet er %lf\n", score);*/
                 if(score > THRESHOLD) {
@@ -146,6 +146,9 @@ int main (void) {
     fclose(input_file);
     fclose(cb_file);
 	fclose(non_cb_file);
+    fclose(training_clickbait);
+    fclose(training_nonclickbait);
+    fclose(probability_file);
 
     return 0;
 }
@@ -239,7 +242,7 @@ int has_special_sym (char title[MAX_SIZE][MAX_SIZE], const int size) {
 	return special_flag;
 }
 
-double get_score( int flags[], double const_cb_probabilities[], double const_non_cb_probabilities[]) {
+double get_probability( int flags[], double const_cb_probabilities[], double const_non_cb_probabilities[]) {
     
     double bayes_score, is_cb, isnot_cb;
     /* Hvis en feature ikke er fundet er sandsynligheden 1-feature*/
