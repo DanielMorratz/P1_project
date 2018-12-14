@@ -39,7 +39,7 @@ int main (void) {
     FILE *training_clickbait = NULL, *training_nonclickbait = NULL, *probability_file = NULL;
    
 
-    double score = 0;
+    double probability = 0;
     input_file = fopen("overskrifter.txt","r");
     cb_file = fopen("clickbait.txt", "w");
 	non_cb_file = fopen("non_clickbait.txt", "w");
@@ -97,8 +97,8 @@ int main (void) {
                     flags[has_cite] = has_citation(title,size);
                     flags[has_caps] = has_all_caps(title,size);
                     flags[has_sp_sym] = has_special_sym(title, size);
-                    score = get_probability(flags, cb_probabilities, non_cb_probabilities);
-                    if(score > THRESHOLD) {
+					probability = get_probability(flags, cb_probabilities, non_cb_probabilities);
+                    if(probability > THRESHOLD) {
                         if (is_clickbait == TRUE ) {
                             true_positive++;
                         } else {
@@ -130,13 +130,11 @@ int main (void) {
                 flags[has_caps] = has_all_caps(title,size);
                 flags[has_sp_sym] = has_special_sym(title, size);
             
-                score = get_probability(flags, cb_probabilities, non_cb_probabilities);
-                /* debug print 
-                printf("Og resultatet er %lf\n", score);*/
-                if(score > THRESHOLD) {
-                    write_to_txt(cb_file, title, size, score);
+				probability = get_probability(flags, cb_probabilities, non_cb_probabilities);
+                if(probability > THRESHOLD) {
+                    write_to_txt(cb_file, title, size, probability);
                 } else {
-                    write_to_txt(non_cb_file, title, size, score);
+                    write_to_txt(non_cb_file, title, size, probability);
                 }
             } else { 
                 done = 1;  
@@ -153,7 +151,8 @@ int main (void) {
     return 0;
 }
 
-/* Indlæster en oerskrift ind i et string array*/
+/* I denne funktion bliver der sendt en string ned hvor overskriften skal være i og en fil overskriften bliver hentet fra.
+   Funktionen returnere længden af overskriften.*/
 int get_title (char title[MAX_SIZE][MAX_SIZE], FILE *file) {
     char string[MAX_SIZE];
     int done = 0, size = 0;
@@ -170,7 +169,6 @@ int get_title (char title[MAX_SIZE][MAX_SIZE], FILE *file) {
                 } else {
                     strcpy(title[size],string);
                     size++;
-               
                 }
          
             }
@@ -183,7 +181,9 @@ int get_title (char title[MAX_SIZE][MAX_SIZE], FILE *file) {
 }
 
 
-/* Tjekker om et af ordene fra vores ordliste af stedord, er i sætningen */
+/* Funktionen får sendt overskriften, som er blevet lagt i en string og længden af overskriften.
+   Funktionen kører igennem overskriften og sammenligner hvert ord med forward en reference ordliste, hvis et af overskriftens ord er ens med et af ordlisten
+   returnere funktionen sandt, hvis ikke returnere den falsk*/
 int has_fw_reference(char title[MAX_SIZE][MAX_SIZE], const int size){
     int i = 0, fw_flag = FALSE, j = 0;
     char fw_ref_words[AMOUNT_OF_PRONOUNS][AMOUNT_OF_PRONOUNS] ={"her","Her","Saadan", "saadan","Saa", "saa",
@@ -207,7 +207,8 @@ int has_fw_reference(char title[MAX_SIZE][MAX_SIZE], const int size){
     return fw_flag;
 }
 
-/* tjekker om der er et citat i sætningen */
+/* Funktionen får sendt overskriften, som er blevet lagt i en string og længden af overskriften.
+   Funktionen kører igennem overskriften for at finde citationstegn eller kolon, hvis denne feature findes returneres der sandt, hvis ikke returneres falsk*/
 int has_citation(char title[MAX_SIZE][MAX_SIZE], const int size){
     int cite_flag = FALSE;
     int i = 0;
@@ -220,7 +221,9 @@ int has_citation(char title[MAX_SIZE][MAX_SIZE], const int size){
     return cite_flag;
 }
 
-/* Tjekker om de 2 første bogstaver af et ord er store, hvilket betyder at hele ordet er i all caps, eller at journalisten ikke kan stave */
+/* Funktionen får sendt overskriften, som er blevet lagt i en string og længden af overskriften.
+   Funktionen tjekker om ordet kun består af versaler, ved at tjekke om de første 2 bogstaver er versaler, hvis de er returnere funktionen sand
+   hvis de ikke er returnere funktionen falsk*/
 int has_all_caps(char title[MAX_SIZE][MAX_SIZE], const int size){
     int i = 0, caps_flag = FALSE;
     for( i = 0; i < size; i++){
@@ -231,7 +234,9 @@ int has_all_caps(char title[MAX_SIZE][MAX_SIZE], const int size){
     return caps_flag;
 }
 
-/* tjekker om et ord slutter på ! eller ?*/
+/* Funktionen får sendt overskriften, som er blevet lagt i en string og længden af overskriften.
+   Funktionen tjekker om overskriften indeholder specialtegn, hvis overskriften indeholder en af disse returnere den sand
+   hvis den ikke indeholder en af disse returnere funktionen falsk.*/
 int has_special_sym (char title[MAX_SIZE][MAX_SIZE], const int size) {
 	int i = 0, special_flag = FALSE;
 	for (i = 0; i < size; i++) {
@@ -242,6 +247,7 @@ int has_special_sym (char title[MAX_SIZE][MAX_SIZE], const int size) {
 	return special_flag;
 }
 
+/* Funktionen får tilsendt værdierne for vores features */
 double get_probability( int flags[], double const_cb_probabilities[], double const_non_cb_probabilities[]) {
     
     double bayes_score, is_cb, isnot_cb;
@@ -275,19 +281,21 @@ double get_probability( int flags[], double const_cb_probabilities[], double con
 }
 
 
-/* Skriver en sætning ind i den respektive fil */
-void write_to_txt (FILE *file, char title[MAX_SIZE][MAX_SIZE], const int size, const double score) {
+/* Denne funktion får tilsendt en fil og overskriften, dens længde og sandsynligheden
+   funktionen skriver overskriften ind i dens respektive fil 	*/
+void write_to_txt (FILE *file, char title[MAX_SIZE][MAX_SIZE], const int size, const double probability) {
 	int i = 0;
 	
 	for (i = 0; i < size; i++) {
         fprintf(file, "%s ", title[i]);
 	}
-    fprintf(file,"\" Score %.0lf\"\n",score);
+    fprintf(file,"\" probability %.0lf\"\n", probability);
 }
 
 
 
-/* Beregner recall, precision og f1 score ud fra positiver og negativer */
+/* Funktionen får tilsendt antallet af true positives, false positives, true negatives og false negatives
+	Funktionen beregner derefter f1 scoren og udskriver den*/
 void getf1_score(const int true_positives, const int false_positives, const int true_negatives, const int false_negatives){
     double f1 = 0, recall = 0, precision = 0;
 
@@ -298,7 +306,7 @@ void getf1_score(const int true_positives, const int false_positives, const int 
     printf(" Recall: %lf precision: %lf\n F1 score: %lf\n", recall, precision, f1);
 
 }
-/* Åben UI som spørg brugeren om hvad de ønsker at gøre */
+/* En ui der fortæller brugeren hvad han kan vælge imellem at gøre, ui'en køre indtil den får et korrekt svar */
 int open_ui(void){
     int val = -1;
     while(val > 3 || val < 0)
@@ -323,6 +331,8 @@ int open_ui(void){
     return val;
 }
 
+/* Funktionen for tilsendt en fil, en liste af hvilke flags er til stede og mængden af clickbait/nonclickbait
+   Funktionen ligger sandsynligheden for at en feature gør en overskrift clickbait.*/
 void calculate_probabilities(FILE *probabilities_for_feature, int flags[AMOUNT_OF_FLAGS], int amount){
     int i = 0;
     
@@ -335,25 +345,16 @@ void calculate_probabilities(FILE *probabilities_for_feature, int flags[AMOUNT_O
     return ;
 }
 
+/* Denne funktion får tilsendt en tom liste til sandsynligheden af nonclickbait, en til sandsynligheden af clickbait og en fil med sandsynlighederne af noclickbait/clickbait
+   Funktionen indlæser de sandsynlighederne ind i de tomme lister */
 void get_prob(double nonclickbaitprob[], double clickbaitprob[], FILE *fp){
     int i = 0;
 
     for(i = 0; i < AMOUNT_OF_FEATURES; i++){
         fscanf(fp," %lf ", nonclickbaitprob+i);
-        printf(" %lf ", nonclickbaitprob[i]);
     }
     for(i = 0; i < AMOUNT_OF_FEATURES; i++){
         fscanf(fp," %lf ", clickbaitprob+i); 
-        printf(" %lf ", clickbaitprob[i]);        
     }    
 }
 
-/* debug function */
-void print_array (char title[MAX_SIZE][MAX_SIZE], const int size) {
-    int i = 0;
-    for(i = 0; i < size;i++) {
-        printf("%s ",title[i]);
-    }
-    printf("\n");
-    return;
-}
