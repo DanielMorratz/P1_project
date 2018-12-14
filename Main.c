@@ -304,6 +304,7 @@ void getf1_score(const int true_positives, const int false_positives, const int 
     f1 = 2*(recall * precision)/(recall + (precision));
     printf("true positives: %d\t false positives: %d\t, true_negatives: %d\t false_negatives: %d\n",true_positives, false_positives,true_negatives, false_negatives);
     printf(" Recall: %lf precision: %lf\n F1 score: %lf\n", recall, precision, f1);
+
     return;
 }
 /* En ui der fortæller brugeren hvad han kan vælge imellem at gøre, ui'en køre indtil den får et korrekt svar */
@@ -355,7 +356,8 @@ void get_prob(double nonclickbaitprob[], double clickbaitprob[], FILE *fp){
     }
     for(i = 0; i < AMOUNT_OF_FEATURES; i++){
         fscanf(fp," %lf ", clickbaitprob+i); 
-    }    
-    return;
+    }
+
+    return;   
 }
 
