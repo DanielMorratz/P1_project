@@ -55,6 +55,10 @@ int main (void) {
         training_nonclickbait = fopen("training_nonclickbaitdata.txt","r");
     } else {
         probability_file = fopen("probabilities.txt", "r");
+            if (probability_file == NULL) {
+                printf("ERROR, FILE DOES NOT EXIST");
+                exit(EXIT_FAILURE);
+            }
         get_prob(non_cb_probabilities, cb_probabilities, probability_file);
         if (user_input == 2) {
             test_clickbait = fopen("test_clickbait.txt", "r");
@@ -62,7 +66,7 @@ int main (void) {
         }
     }
     if (input_file == NULL || probability_file == NULL) {
-    printf("ERROR FILE DOES NOT EXIST");
+    printf("ERROR, FILE DOES NOT EXIST");
     exit(EXIT_FAILURE);
     }
     
