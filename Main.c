@@ -7,7 +7,7 @@
 #define TRUE 1
 #define FALSE 0
 #define AMOUNT_OF_PRONOUNS 7*2
-#define THRESHOLD 34
+#define THRESHOLD 60
 #define AMOUNT_OF_FLAGS 4
 #define AMOUNT_OF_FEATURES 4
 
