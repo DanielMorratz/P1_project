@@ -352,10 +352,17 @@ void get_prob(double nonclickbaitprob[], double clickbaitprob[], FILE *fp){
     int i = 0;
 
     for(i = 0; i < AMOUNT_OF_FEATURES; i++){
-        fscanf(fp," %lf ", nonclickbaitprob+i);
+        if (fscanf(fp," %lf ", nonclickbaitprob+i) == EOF){
+            printf("Not enough probabilities!");
+            exit(EXIT_FAILURE);
+        }
     }
+            
     for(i = 0; i < AMOUNT_OF_FEATURES; i++){
-        fscanf(fp," %lf ", clickbaitprob+i); 
+        if (fscanf(fp," %lf ", clickbaitprob+i) == EOF) {
+          printf("Not enough probabilities!");
+          exit(EXIT_FAILURE);
+        }
     }
 
     return;   
