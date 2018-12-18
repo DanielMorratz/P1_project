@@ -7,7 +7,7 @@
 #define TRUE 1
 #define FALSE 0
 #define AMOUNT_OF_PRONOUNS 7*2
-#define THRESHOLD 68
+#define THRESHOLD 34
 #define AMOUNT_OF_FLAGS 4
 #define AMOUNT_OF_FEATURES 4
 
@@ -35,7 +35,7 @@ int main (void) {
     int false_positive = 0, true_positive = 0, false_negative = 0, true_negative = 0, size = 0, done = 0, user_input = 0, is_clickbait = 0, amount = 0, i = 0;
     char title[MAX_SIZE][MAX_SIZE]; 
     double cb_probabilities[AMOUNT_OF_FEATURES], non_cb_probabilities[AMOUNT_OF_FEATURES] ;
-    FILE *input_file = NULL, *cb_file = NULL, *non_cb_file = NULL;
+    FILE *input_file = NULL, *cb_file = NULL, *non_cb_file = NULL, *test_clickbait = NULL, *test_nonclickbait = NULL;
     FILE *training_clickbait = NULL, *training_nonclickbait = NULL, *probability_file = NULL;
    
 
@@ -43,8 +43,6 @@ int main (void) {
     input_file = fopen("overskrifter.txt","r");
     cb_file = fopen("clickbait.txt", "w");
 	non_cb_file = fopen("non_clickbait.txt", "w");
-    training_clickbait = fopen("training_clickbaitdata.txt","r");
-    training_nonclickbait = fopen("training_nonclickbaitdata.txt","r"); 
     /* Lukker programmet hvis filen med overskrifter ikke eksisterer*/
 
     user_input = open_ui();    
@@ -53,9 +51,15 @@ int main (void) {
     }
     if (user_input == 1) {
         probability_file = fopen("probabilities.txt","w");
+        training_clickbait = fopen("training_clickbaitdata.txt","r");
+        training_nonclickbait = fopen("training_nonclickbaitdata.txt","r");
     } else {
         probability_file = fopen("probabilities.txt", "r");
         get_prob(non_cb_probabilities, cb_probabilities, probability_file);
+        if (user_input == 2) {
+            test_clickbait = fopen("test_clickbait.txt", "r");
+            test_nonclickbait = fopen("test_nonclickbait.txt", "r");
+        }
     }
     if (input_file == NULL || probability_file == NULL) {
     printf("ERROR FILE DOES NOT EXIST");
@@ -66,9 +70,17 @@ int main (void) {
         
         if(user_input  != 3) {
             if (is_clickbait == FALSE) {
-                size = get_title(title, training_nonclickbait);
+                if (user_input == 1) {
+                    size = get_title(title, training_nonclickbait);
+                } else {
+                    size = get_title(title, test_nonclickbait);
+                }
             } else {
-                size = get_title(title, training_clickbait);
+                if(user_input == 1) {
+                    size = get_title(title, training_clickbait);
+                } else { 
+                    size = get_title(title, test_clickbait);
+                }
             }
             if (user_input == 1) {
                 if(size > 0) {
@@ -298,9 +310,8 @@ void write_to_txt (FILE *file, char title[MAX_SIZE][MAX_SIZE], const int size, c
 	Funktionen beregner derefter f1 scoren og udskriver den*/
 void getf1_score(const int true_positives, const int false_positives, const int true_negatives, const int false_negatives){
     double f1 = 0, recall = 0, precision = 0;
-
     precision = (double) true_positives/(false_positives + true_positives);
-    recall =(double) true_positives/(true_positives + true_negatives);    
+    recall =(double) true_positives/(true_positives + false_negatives);    
     f1 = 2*(recall * precision)/(recall + (precision));
     printf("true positives: %d\t false positives: %d\t, true_negatives: %d\t false_negatives: %d\n",true_positives, false_positives,true_negatives, false_negatives);
     printf(" Recall: %lf precision: %lf\n F1 score: %lf\n", recall, precision, f1);
@@ -338,11 +349,10 @@ void calculate_probabilities(FILE *probabilities_for_feature, int flags[AMOUNT_O
     int i = 0;
     
     for(i = 0; i < AMOUNT_OF_FEATURES; i++){
-        
         fprintf(probabilities_for_feature, "%lf\n",(double)flags[i]/amount) ;
         flags[i] = 0;
+        
     }
-    
     return ;
 }
 
@@ -353,14 +363,14 @@ void get_prob(double nonclickbaitprob[], double clickbaitprob[], FILE *fp){
 
     for(i = 0; i < AMOUNT_OF_FEATURES; i++){
         if (fscanf(fp," %lf ", nonclickbaitprob+i) == EOF){
-            printf("Not enough probabilities!");
+            printf("Not enough probabilities!\n");
             exit(EXIT_FAILURE);
         }
     }
             
     for(i = 0; i < AMOUNT_OF_FEATURES; i++){
         if (fscanf(fp," %lf ", clickbaitprob+i) == EOF) {
-          printf("Not enough probabilities!");
+          printf("Not enough probabilities!\n");
           exit(EXIT_FAILURE);
         }
     }
